@@ -1,7 +1,7 @@
 <resources>
     <color name="primary">#373266</color>
     <color name="primary_dark">#373266</color>
-    <color name="accent">#373266</color>
+    <color name="accent">#ff3366</color>
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
