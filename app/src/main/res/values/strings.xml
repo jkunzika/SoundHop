@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">SoundHop</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="parse_app_id">kv7TVEAgsGcUW0lwDIls8EP42aZHEBlmjaUsPDNM</string>
+    <string name="parse_client_key">lcsVKA4dDq16sVPzGG0JALdUOmlE0xx5xdEQtC1q</string>
+    <string name="facebook_app_id">1621115711468447</string>
+    <string-array name="my_facebook_permissions">
+        <item>public_profile</item>
+        <item>email</item>
+        <item>user_friends</item>
+        <item>user_photos</item>
+    </string-array>
+
+
+</resources>
