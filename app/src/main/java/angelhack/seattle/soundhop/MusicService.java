@@ -11,6 +11,8 @@ import android.os.IBinder;
 import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.DatagramPacket;
@@ -35,7 +37,7 @@ public class MusicService extends Service {
     AudioRecord recorder;
 
     //Audio Configuration.
-    private int sampleRate = 8000;      //How much will be ideal?
+    private int sampleRate = 44100;      //How much will be ideal?
     private int channelConfig = AudioFormat.CHANNEL_CONFIGURATION_MONO;
     private int audioFormat = AudioFormat.ENCODING_PCM_16BIT;
 
@@ -193,22 +195,25 @@ public class MusicService extends Service {
 
 //                    recorder.startRecording();
 
-                    if(musicFiles.get(0) != null) {
-                        InputStream is = openFileInput(musicFiles.get(0));
-                        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                    if(Globals.playlistArray != null && Globals.playlistArray.size() > 0) {
+                        String path = Utils.getPath(Globals.playlistArray.get(0).getUri());
+                        if(path != null) {
+                            InputStream is = new FileInputStream(new File(path));
+                            ByteArrayOutputStream bos = new ByteArrayOutputStream();
 //                        byte[] b = new byte[1024];
-                        int bytesRead;
-                        while ((bytesRead = is.read(buffer)) != -1 && status == true){
-                            bos.write(buffer, 0, buffer.length);
-                            minBufSize = bytesRead;
+                            int bytesRead;
+                            while ((bytesRead = is.read(buffer)) != -1 && status) {
+                                bos.write(buffer, 0, buffer.length);
+                                minBufSize = bytesRead;
 
 //                            minBufSize = recorder.read(buffer, 0, buffer.length);
 //
 //                        //putting buffer in the packet
-                            packet = new DatagramPacket (buffer,buffer.length,destination,port);
+                                packet = new DatagramPacket(buffer, buffer.length, destination, port);
 //
-                            socket.send(packet);
+                                socket.send(packet);
 
+                            }
                         }
                     }
 
@@ -244,6 +249,7 @@ public class MusicService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.i("MusicService", "onStartCommand");
         musicFiles = intent.getStringArrayListExtra("musicFiles");
         ArrayList<String> ipArray = new ArrayList<>();
         ipArray.add("192.168.144.211");
@@ -254,7 +260,7 @@ public class MusicService extends Service {
         }
         // We want this service to continue running until it is explicitly
         // stopped, so return sticky.
-        return START_STICKY;
+        return START_NOT_STICKY;
     }
 
     @Override

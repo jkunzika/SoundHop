@@ -29,6 +29,7 @@ import com.daimajia.androidanimations.library.YoYo;
 import com.nineoldandroids.animation.Animator;
 import com.nononsenseapps.filepicker.FilePickerActivity;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -268,7 +269,8 @@ public class MainActivityFragment extends Fragment {
         Intent intent = new Intent(getActivity(), MusicService.class);
         ArrayList<String> musicFiles = new ArrayList<>();
         for(int i = 0; i < Globals.playlistArray.size(); i++){
-            musicFiles.add(Globals.playlistArray.get(i).getUri().getPath());
+            File musicFile = new File(Globals.playlistArray.get(i).getUri().getPath());
+            musicFiles.add(musicFile.getAbsolutePath());
         }
         intent.putStringArrayListExtra("musicFiles", musicFiles);
         getActivity().startService(intent);

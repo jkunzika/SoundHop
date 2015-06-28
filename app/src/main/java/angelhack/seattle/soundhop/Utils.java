@@ -122,7 +122,7 @@ public class Utils {
         Cursor cursor = getContext().getContentResolver().query(
                 MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                 new String[]{MediaStore.Audio.Media._ID},
-                MediaStore.Images.Media.DATA + "=? ",
+                MediaStore.Audio.Media.DATA + "=? ",
                 new String[]{filePath}, null);
         if (cursor != null && cursor.moveToFirst()) {
             int id = cursor.getInt(cursor.getColumnIndex(MediaStore.MediaColumns._ID));
@@ -137,6 +137,18 @@ public class Utils {
                 return null;
             }
         }
+    }
+
+    public static String getPath(Uri uri)
+    {
+        String[] projection = { MediaStore.Audio.Media.DATA };
+        Cursor cursor = getContext().getContentResolver().query(uri, projection, null, null, null);
+        if (cursor == null) return null;
+        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA);
+        cursor.moveToFirst();
+        String s=cursor.getString(column_index);
+        cursor.close();
+        return s;
     }
 
     public static class SaveFacebookProfilePicToParseTask extends AsyncTask<String, Void, Uri> {

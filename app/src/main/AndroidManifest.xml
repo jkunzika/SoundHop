@@ -65,6 +65,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+        <service android:name="MusicService" />
 
         <!--<activity-->
             <!--android:name="com.ipaulpro.afilechooser.FileChooserActivity"-->
