@@ -380,7 +380,7 @@ public class MainActivityFragment extends Fragment {
     }
 
     long getSynchedTime(){
-        return (new Date().getTime()+getResources().getInteger(R.integer.delay));
+        return (new Date().getTime()+MainActivity.prefs.getInt("delay", 0));
     }
 
     public void startMusicService(){
