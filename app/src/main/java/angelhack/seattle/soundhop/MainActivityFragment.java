@@ -7,9 +7,7 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Environment;
-import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -129,8 +127,8 @@ public class MainActivityFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 pickNewSong();
-                Globals.playlistArray.add(new SongItem(generateID(),generateID(),500));
-                playlistAdapter.notifyDataSetChanged();
+//                Globals.playlistArray.add(new SongItem(generateID(),generateID(),500,null));
+//                playlistAdapter.notifyDataSetChanged();
 //                Intent intent = new Intent();
 //                intent.setAction(android.content.Intent.ACTION_PICK);
 //                intent.setData(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI);
@@ -178,6 +176,9 @@ public class MainActivityFragment extends Fragment {
         i.putExtra(FilePickerActivity.EXTRA_ALLOW_MULTIPLE, false);
         i.putExtra(FilePickerActivity.EXTRA_ALLOW_CREATE_DIR, false);
         i.putExtra(FilePickerActivity.EXTRA_MODE, FilePickerActivity.MODE_FILE);
+//        i.setData(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI);
+//        i.setAction(android.content.Intent.ACTION_PICK);
+
 
         // Configure initial directory by specifying a String.
         // You could specify a String like "/storage/emulated/0/", but that can
