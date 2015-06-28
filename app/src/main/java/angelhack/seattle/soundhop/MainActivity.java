@@ -3,6 +3,7 @@ package angelhack.seattle.soundhop;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -16,8 +17,10 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Utils.setContext(this);
         ParseLoginBuilder builder = new ParseLoginBuilder(MainActivity.this);
-        startActivityForResult(builder.build(), 0);
+        startActivityForResult(builder.build(), Globals.FBLOGIN);
+
 
     }
 
@@ -46,6 +49,13 @@ public class MainActivity extends Activity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == Globals.FBLOGIN){
+            if(resultCode == RESULT_OK){
+                Utils.getFacebookProfilePicture();
+            } else if(resultCode == RESULT_CANCELED){
+                Log.e("FBLOGIN", "login failed");
+            }
+        }
         ParseFacebookUtils.onActivityResult(requestCode, resultCode, data);
     }
 
