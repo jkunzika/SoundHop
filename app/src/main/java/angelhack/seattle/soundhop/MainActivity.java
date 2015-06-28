@@ -1,14 +1,21 @@
 package angelhack.seattle.soundhop;
 
+import android.app.Activity;
+import android.content.ClipData;
 import android.content.Intent;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.nononsenseapps.filepicker.FilePickerActivity;
 import com.parse.ParseFacebookUtils;
 import com.parse.ui.ParseLoginBuilder;
+
+import java.util.ArrayList;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -56,7 +63,37 @@ public class MainActivity extends ActionBarActivity {
             } else if(resultCode == RESULT_CANCELED){
                 Log.e("FBLOGIN", "login failed");
             }
+        } else if (requestCode == Globals.FILE_CODE && resultCode == Activity.RESULT_OK) {
+            if (data.getBooleanExtra(FilePickerActivity.EXTRA_ALLOW_MULTIPLE, false)) {
+                // For JellyBean and above
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                    ClipData clip = data.getClipData();
+
+                    if (clip != null) {
+                        for (int i = 0; i < clip.getItemCount(); i++) {
+                            Uri uri = clip.getItemAt(i).getUri();
+                            // Do something with the URI
+                        }
+                    }
+                    // For Ice Cream Sandwich
+                } else {
+                    ArrayList<String> paths = data.getStringArrayListExtra
+                            (FilePickerActivity.EXTRA_PATHS);
+
+                    if (paths != null) {
+                        for (String path: paths) {
+                            Uri uri = Uri.parse(path);
+                            // Do something with the URI
+                        }
+                    }
+                }
+
+            } else {
+                Uri uri = data.getData();
+                // Do something with the URI
+            }
         }
+
         ParseFacebookUtils.onActivityResult(requestCode, resultCode, data);
     }
 }
