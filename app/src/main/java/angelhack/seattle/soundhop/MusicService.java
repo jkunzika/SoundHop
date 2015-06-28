@@ -6,12 +6,13 @@ import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioRecord;
 import android.media.AudioTrack;
-import android.media.MediaRecorder;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -53,10 +54,13 @@ public class MusicService extends Service {
         return mBinder;
     }
 
+    public ArrayList<String> musicFiles = null;
+
 
     @Override
     public void onCreate() {
         super.onCreate();
+
 //        setContentView(R.layout.main);
 //
 //        receiveButton = (Button) findViewById(R.id.receive_button);
@@ -181,29 +185,48 @@ public class MusicService extends Service {
                     DatagramPacket packet;
 
                     final InetAddress destination = InetAddress.getByName(ipArray.get(0));
-                    Log.d("VS", "Address retrieved");
+                    Log.d("VS", "Address retrieved: " + destination.toString());
 
 
-                    recorder = new AudioRecord(MediaRecorder.AudioSource.MIC,sampleRate,channelConfig,audioFormat,minBufSize);
-                    Log.d("VS", "Recorder initialized");
+//                    recorder = new AudioRecord(MediaRecorder.AudioSource.MIC,sampleRate,channelConfig,audioFormat,minBufSize);
+//                    Log.d("VS", "Recorder initialized");
 
-                    recorder.startRecording();
+//                    recorder.startRecording();
 
+                    if(musicFiles.get(0) != null) {
+                        InputStream is = openFileInput(musicFiles.get(0));
+                        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+//                        byte[] b = new byte[1024];
+                        int bytesRead;
+                        while ((bytesRead = is.read(buffer)) != -1 && status == true){
+                            bos.write(buffer, 0, buffer.length);
+                            minBufSize = bytesRead;
 
-                    while(status == true) {
+//                            minBufSize = recorder.read(buffer, 0, buffer.length);
+//
+//                        //putting buffer in the packet
+                            packet = new DatagramPacket (buffer,buffer.length,destination,port);
+//
+                            socket.send(packet);
 
-
-                        //reading data from MIC into buffer
-                        minBufSize = recorder.read(buffer, 0, buffer.length);
-
-                        //putting buffer in the packet
-                        packet = new DatagramPacket (buffer,buffer.length,destination,port);
-
-                        socket.send(packet);
-
-
+                        }
                     }
 
+
+//                    while(status == true) {
+//
+//
+//                        //reading data from MIC into buffer
+//                        minBufSize = recorder.read(buffer, 0, buffer.length);
+//
+//                        //putting buffer in the packet
+//                        packet = new DatagramPacket (buffer,buffer.length,destination,port);
+//
+//                        socket.send(packet);
+//
+//
+//                    }
+//
 
 
                 } catch(UnknownHostException e) {
@@ -221,7 +244,14 @@ public class MusicService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-
+        musicFiles = intent.getStringArrayListExtra("musicFiles");
+        ArrayList<String> ipArray = new ArrayList<>();
+        ipArray.add("192.168.144.211");
+        if(Globals.role == 0){
+            startStreaming(ipArray);
+        } else {
+            startReceiving();
+        }
         // We want this service to continue running until it is explicitly
         // stopped, so return sticky.
         return START_STICKY;

@@ -7,6 +7,7 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -116,11 +117,11 @@ public class MainActivityFragment extends Fragment {
             public boolean onActionItemClicked(android.view.ActionMode mode, MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.menu_item_delete_song: //If they want to delete the items they selected
-                        for (int i=Globals.playlistArray.size()-1;i>-1;i--){
+                        for (int i = Globals.playlistArray.size() - 1; i > -1; i--) {
                             if (songList.isItemChecked(i)) {
                                 SongItem current = Globals.playlistArray.get(i);
-                                if (current.getUri() == Globals.curUri){ //If the song's currently being played, let's stop it and have the bar slide out
-                                    if (temp!=null)
+                                if (current.getUri() == Globals.curUri) { //If the song's currently being played, let's stop it and have the bar slide out
+                                    if (temp != null)
                                         temp.stop();
                                     tabPlayPause.setImageDrawable(getResources().getDrawable(R.drawable.play_ring));
                                     temp = null;
@@ -154,7 +155,8 @@ public class MainActivityFragment extends Fragment {
                         temp.prepare(); } catch(Exception e){e.printStackTrace();}
                 }
                 if (!temp.isPlaying()) { //If it's not playing, then start playing
-                    temp.start();
+//                    temp.start();
+                    startMusicService();
                     tabPlayPause.setImageDrawable(getResources().getDrawable(R.drawable.pause_ring));
                 }
                 else{ //If it's playing, then pause it.
@@ -192,8 +194,14 @@ public class MainActivityFragment extends Fragment {
         });
 
         //Configure things depending on whether you're host or not
-        if (Globals.role==1) //1 == Client
+        if (Globals.role==1) { //1 == Client
             groupTitle.setFocusable(false);
+            startMusicService();
+        }
+
+
+
+
         return v;
     }
 
@@ -231,7 +239,7 @@ public class MainActivityFragment extends Fragment {
         i.putExtra(FilePickerActivity.EXTRA_ALLOW_MULTIPLE, false);
         i.putExtra(FilePickerActivity.EXTRA_ALLOW_CREATE_DIR, false);
         i.putExtra(FilePickerActivity.EXTRA_MODE, FilePickerActivity.MODE_FILE);
-//        i.setData(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI);
+        i.setData(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI);
 //        i.setAction(android.content.Intent.ACTION_PICK);
 
 
@@ -239,10 +247,20 @@ public class MainActivityFragment extends Fragment {
         // You could specify a String like "/storage/emulated/0/", but that can
         // dangerous. Always use Android's API calls to get paths to the SD-card or
         // internal memory.
-        i.putExtra(FilePickerActivity.EXTRA_START_PATH, Environment.getExternalStorageDirectory().getPath());
+        i.putExtra(FilePickerActivity.EXTRA_START_PATH, Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC));
 
         getActivity().startActivityForResult(i, Globals.FILE_CODE);
 
+    }
+
+    public void startMusicService(){
+        Intent intent = new Intent(getActivity(), MusicService.class);
+        ArrayList<String> musicFiles = new ArrayList<>();
+        for(int i = 0; i < Globals.playlistArray.size(); i++){
+            musicFiles.add(Globals.playlistArray.get(i).getUri().getPath());
+        }
+        intent.putStringArrayListExtra("musicFiles", musicFiles);
+        getActivity().startService(intent);
     }
 
     public class SongAdapter extends ArrayAdapter<SongItem> {
