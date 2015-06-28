@@ -39,7 +39,7 @@ public class MainActivity extends ActionBarActivity {
         ParseLoginBuilder builder = new ParseLoginBuilder(MainActivity.this);
         getSupportActionBar().hide();
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment,new JoinGroupFragment()).commit();
-        //startActivityForResult(builder.build(), Globals.FBLOGIN); //Temporarily commented out for debugging speed
+        startActivityForResult(builder.build(), Globals.FBLOGIN); //Temporarily commented out for debugging speed
         parent = this;
         prefs = getPreferences(Context.MODE_PRIVATE);
     }
