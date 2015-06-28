@@ -23,15 +23,21 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
+import com.firebase.client.DataSnapshot;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.ValueEventListener;
 import com.nineoldandroids.animation.Animator;
 import com.nononsenseapps.filepicker.FilePickerActivity;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Random;
+import java.util.concurrent.Executors;
 
 
 /**
@@ -46,6 +52,7 @@ public class MainActivityFragment extends Fragment {
     ListView songList;
     static SongAdapter playlistAdapter;
     MediaPlayer temp;
+    long mPlayVal;
 
     public MainActivityFragment() {
     }
@@ -156,13 +163,16 @@ public class MainActivityFragment extends Fragment {
                         temp.setDataSource(getActivity().getApplicationContext(), Globals.curUri);
                         temp.prepare(); } catch(Exception e){e.printStackTrace();}
                 }
+                MainActivity.firebase.child("playAt").setValue(getSynchedTime()+500);
                 if (!temp.isPlaying()) { //If it's not playing, then start playing
-//                    temp.start();
-                    startMusicService();
+                    MainActivity.firebase.child("play").setValue(1);
+                    //temp.start();
+                    //startMusicService();
                     tabPlayPause.setImageDrawable(getResources().getDrawable(R.drawable.pause_ring));
                 }
                 else{ //If it's playing, then pause it.
-                    temp.pause();
+                    //temp.pause();
+                    MainActivity.firebase.child("play").setValue(0);
                     tabPlayPause.setImageDrawable(getResources().getDrawable(R.drawable.play_ring));
                 }
             }
@@ -206,14 +216,47 @@ public class MainActivityFragment extends Fragment {
         //Configure things depending on whether you're host or not
         if (Globals.role==1) { //1 == Client
             groupTitle.setFocusable(false);
-            startMusicService();
+            //startMusicService();
         }
-
-
-
 
         if (Globals.groupName!=null)
             groupTitle.setText(Globals.groupName);
+
+
+        MainActivity.firebase.child("play").addValueEventListener(new ValueEventListener() { //Watch for when the play variable changes
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.getValue()!=null) { //If there is a value for play
+                    Toast.makeText(getActivity(),"Got the command.", Toast.LENGTH_SHORT).show();
+                    mPlayVal = (long) dataSnapshot.getValue(); //Gets the play value, 0 or 1
+
+                    MainActivity.firebase.child("playAt").addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            long targetPlayPauseTime = (long)dataSnapshot.getValue(); //Gets what time the playback should begin
+                            while (getSynchedTime() < targetPlayPauseTime){ /*Do nothing. Just wait. Welcome to hackathon hack solutions.*/ }
+                            if (mPlayVal == 1 && temp!=null) {
+                                if (!temp.isPlaying())
+                                    temp.start();
+                            } else if (temp!=null){
+                                if (temp.isPlaying())
+                                    temp.pause();
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(FirebaseError firebaseError) {
+
+                        }
+                    });
+                }
+            }
+
+            @Override public void onCancelled(FirebaseError firebaseError) {}
+        });
+
+        new debugUpdater(getActivity(),(TextView)v.findViewById(R.id.debug_text)).executeOnExecutor(Executors.newSingleThreadExecutor());
+
         return v;
     }
 
@@ -239,6 +282,11 @@ public class MainActivityFragment extends Fragment {
                 tabLayout.setVisibility(View.VISIBLE);
                 YoYo.with(Techniques.SlideInUp).duration(500).playOn(tabLayout);
             }
+            temp = new MediaPlayer();
+            temp.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            try{
+                temp.setDataSource(getActivity().getApplicationContext(), Globals.curUri);
+                temp.prepare(); } catch(Exception e){e.printStackTrace();}
         }
     }
 
@@ -263,6 +311,10 @@ public class MainActivityFragment extends Fragment {
 
         getActivity().startActivityForResult(i, Globals.FILE_CODE);
 
+    }
+
+    long getSynchedTime(){
+        return (new Date().getTime()+getResources().getInteger(R.integer.delay));
     }
 
     public void startMusicService(){

@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.firebase.client.Firebase;
 import com.nononsenseapps.filepicker.FilePickerActivity;
 import com.parse.ParseFacebookUtils;
 import com.parse.ui.ParseLoginBuilder;
@@ -21,17 +22,22 @@ import java.util.ArrayList;
 
 
 public class MainActivity extends ActionBarActivity {
+    public static Activity parent;
+    public static Firebase firebase;
     String audioID, artist_name, artist_band;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Firebase.setAndroidContext(this);
+        firebase = new Firebase("https://soundhop.firebaseio.com");
         setContentView(R.layout.activity_main);
         Utils.setContext(this);
         ParseLoginBuilder builder = new ParseLoginBuilder(MainActivity.this);
         getSupportActionBar().hide();
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment,new JoinGroupFragment()).commit();
-        startActivityForResult(builder.build(), Globals.FBLOGIN);
+        //startActivityForResult(builder.build(), Globals.FBLOGIN); //Temporarily commented out for debugging speed
+        parent = this;
     }
 
 

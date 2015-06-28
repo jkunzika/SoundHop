@@ -135,4 +135,13 @@
 
     </RelativeLayout>
 
+    <TextView
+        android:id="@+id/debug_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="147092938942"
+        android:layout_centerInParent="true"
+        android:textSize="30sp"
+        android:visibility="invisible"/>
+
 </RelativeLayout>
