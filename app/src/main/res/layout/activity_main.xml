@@ -3,7 +3,8 @@
     xmlns:materialdesign="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivityFragment">
+    tools:context=".MainActivityFragment"
+    android:focusable="true" android:focusableInTouchMode="true">
 
     <!--Header-->
     <RelativeLayout
@@ -25,6 +26,7 @@
             android:layout_marginRight="11dp"/>
 
         <EditText
+            android:id="@+id/group_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="AngelHacks Seattle"
@@ -32,7 +34,7 @@
             android:textSize="37sp"
             android:paddingTop="40dp"
             android:layout_centerInParent="true"
-            android:focusableInTouchMode="false"/>
+            android:inputType="textShortMessage"/>
     </RelativeLayout>
 
     <!--Add Song Button-->
@@ -64,6 +66,7 @@
         android:layout_alignParentBottom="true">
 
         <com.gc.materialdesign.views.LayoutRipple
+            android:id="@+id/tab_backdrop"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:background="#373266"/>
@@ -85,12 +88,14 @@
             android:layout_marginLeft="10dp">
 
             <TextView
+                android:id="@+id/tab_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Uptown Funk"
                 android:textColor="#ffffff"
                 android:textSize="25sp"/>
             <TextView
+                android:id="@+id/tab_artist"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Bruno Mars"
