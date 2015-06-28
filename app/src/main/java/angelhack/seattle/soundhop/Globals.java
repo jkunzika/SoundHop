@@ -16,4 +16,5 @@ public class Globals {
     public static String targetIP;
     public static int role;
     public static Uri curUri;
+    public static String groupName;
 }
