@@ -1,19 +1,69 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingTop="@dimen/com_parse_ui_vertical_margin"
-    android:paddingLeft="@dimen/com_parse_ui_horizontal_margin"
-    android:paddingRight="@dimen/com_parse_ui_horizontal_margin"
-    android:paddingBottom="@dimen/com_parse_ui_vertical_margin"
     android:gravity="center"
     android:orientation="vertical"
-    android:background="#373266">
+    android:background="#fafafa">
 
-    <include
-        layout="@layout/com_parse_ui_parse_login_app_logo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="0.5" />
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="241dp"
+        android:src="@drawable/login_crowd"
+        android:scaleType="fitXY"
+        android:layout_alignParentBottom="true"/>
+
+    <ImageView
+        android:id="@+id/login_logo"
+        android:layout_width="300dp"
+        android:layout_height="200dp"
+        android:src="@drawable/soundhop_logo"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="100dp"/>
+
+    <Button
+        android:id="@+id/login_join"
+        android:layout_width="240dp"
+        android:layout_height="50dp"
+        android:textColor="#ffffff"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/join_button_selector"
+        android:text="Join"
+        android:textSize="20sp"
+        android:paddingLeft="20dp"
+        android:paddingRight="0dp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/login_logo"
+        android:visibility="invisible"/>
+
+    <Button
+        android:id="@+id/login_create"
+        android:layout_width="240dp"
+        android:layout_height="50dp"
+        android:textColor="#ffffff"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/join_button_selector"
+        android:text="Create"
+        android:textSize="20sp"
+        android:paddingLeft="20dp"
+        android:paddingRight="0dp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/login_join"
+        android:visibility="invisible"/>
+
+    <Button
+        android:id="@+id/facebook_login"
+        android:layout_width="240dp"
+        android:layout_height="50dp"
+        android:textColor="#ffffff"
+        android:layout_marginTop="60dp"
+        android:background="@drawable/com_parse_ui_facebook_login_button_background_selector"
+        android:drawableLeft="@drawable/com_parse_ui_facebook_login_logo"
+        android:text="@string/com_parse_ui_facebook_login_button_label"
+        android:paddingLeft="20dp"
+        android:paddingRight="0dp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/login_logo"
+        android:visibility="visible"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -24,6 +74,6 @@
 
         <include layout="@layout/com_parse_ui_parse_login_form" />
 
-        <include layout="@layout/com_parse_ui_parse_login_third_party_section" />
+
     </LinearLayout>
-</LinearLayout>
+</RelativeLayout>

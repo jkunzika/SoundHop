@@ -1,4 +1,4 @@
-# SoundHop
+![SoundHop](https://raw.githubusercontent.com/jkunzika/SoundHop/master/soundhop_logo.png "SoundHop")
 Wirelessly stream music from your Android device to other connected ones!
 
 AngelHack Seattle 2015

@@ -214,15 +214,17 @@ containing a value of this type.
         public static int com_parse_ui_parse_login_button_background_selector=0x7f020015;
         public static int com_parse_ui_twitter_login_button_background_selector=0x7f020016;
         public static int com_parse_ui_twitter_login_logo=0x7f020017;
-        public static int messenger_bubble_large_blue=0x7f020018;
-        public static int messenger_bubble_large_white=0x7f020019;
-        public static int messenger_bubble_small_blue=0x7f02001a;
-        public static int messenger_bubble_small_white=0x7f02001b;
-        public static int messenger_button_blue_bg_round=0x7f02001c;
-        public static int messenger_button_blue_bg_selector=0x7f02001d;
-        public static int messenger_button_send_round_shadow=0x7f02001e;
-        public static int messenger_button_white_bg_round=0x7f02001f;
-        public static int messenger_button_white_bg_selector=0x7f020020;
+        public static int fb_login_rectangle=0x7f020018;
+        public static int fb_login_rectangle_pushed=0x7f020019;
+        public static int messenger_bubble_large_blue=0x7f02001a;
+        public static int messenger_bubble_large_white=0x7f02001b;
+        public static int messenger_bubble_small_blue=0x7f02001c;
+        public static int messenger_bubble_small_white=0x7f02001d;
+        public static int messenger_button_blue_bg_round=0x7f02001e;
+        public static int messenger_button_blue_bg_selector=0x7f02001f;
+        public static int messenger_button_send_round_shadow=0x7f020020;
+        public static int messenger_button_white_bg_round=0x7f020021;
+        public static int messenger_button_white_bg_selector=0x7f020022;
     }
     public static final class id {
         public static int app_logo=0x7f090019;

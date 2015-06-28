@@ -26,4 +26,4 @@
         </item>
         <item name="android:textColor">@color/com_parse_ui_parse_login_display_text</item>
         <item name="android:textSize">18sp</item>
-    </style><style name="ParseLoginUI"/></file></source><source path="/Users/Jordan/AndroidstudioProjects/SoundHop/ParseLoginUI/build/generated/res/rs/release"/><source path="/Users/Jordan/AndroidstudioProjects/SoundHop/ParseLoginUI/build/generated/res/generated/release"/></dataSet><dataSet config="release"><source path="/Users/Jordan/AndroidstudioProjects/SoundHop/ParseLoginUI/src/release/res"/></dataSet><mergedItems/></merger>
+    </style></file></source><source path="/Users/devanshk/Documents/Coding_Projects/Co-Op/SoundHop/ParseLoginUI/build/generated/res/rs/release"/><source path="/Users/devanshk/Documents/Coding_Projects/Co-Op/SoundHop/ParseLoginUI/build/generated/res/generated/release"/></dataSet><dataSet config="release"><source path="/Users/devanshk/Documents/Coding_Projects/Co-Op/SoundHop/ParseLoginUI/src/release/res"/></dataSet><mergedItems/></merger>
