@@ -1,12 +1,11 @@
 package angelhack.seattle.soundhop;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.app.Fragment;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,16 +15,15 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
 import com.nineoldandroids.animation.Animator;
+import com.nononsenseapps.filepicker.FilePickerActivity;
 
 import java.util.ArrayList;
 import java.util.Random;
-import java.util.UUID;
 
 
 /**
@@ -107,6 +105,7 @@ public class MainActivityFragment extends Fragment {
         addSong.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                pickNewSong();
                 Globals.playlistArray.add(new SongItem(generateID(),generateID(),500));
                 playlistAdapter.notifyDataSetChanged();
             }
@@ -140,6 +139,26 @@ public class MainActivityFragment extends Fragment {
                 YoYo.with(Techniques.SlideInUp).duration(500).playOn(tabLayout);
             }
         }
+    }
+
+    public void pickNewSong(){
+        Intent i = new Intent(getActivity(), FilePickerActivity.class);
+        // This works if you defined the intent filter
+        // Intent i = new Intent(Intent.ACTION_GET_CONTENT);
+
+        // Set these depending on your use case. These are the defaults.
+        i.putExtra(FilePickerActivity.EXTRA_ALLOW_MULTIPLE, false);
+        i.putExtra(FilePickerActivity.EXTRA_ALLOW_CREATE_DIR, false);
+        i.putExtra(FilePickerActivity.EXTRA_MODE, FilePickerActivity.MODE_FILE);
+
+        // Configure initial directory by specifying a String.
+        // You could specify a String like "/storage/emulated/0/", but that can
+        // dangerous. Always use Android's API calls to get paths to the SD-card or
+        // internal memory.
+        i.putExtra(FilePickerActivity.EXTRA_START_PATH, Environment.getExternalStorageDirectory().getPath());
+
+        getActivity().startActivityForResult(i, Globals.FILE_CODE);
+
     }
 
     public class SongAdapter extends ArrayAdapter<SongItem> {
