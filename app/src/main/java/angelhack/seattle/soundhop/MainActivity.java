@@ -33,7 +33,7 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Firebase.setAndroidContext(this);
-        firebase = new Firebase("https://soundhop.firebaseio.com");
+        firebase = new Firebase("https://soundhopdev.firebaseio.com");
         setContentView(R.layout.activity_main);
         Utils.setContext(this);
         ParseLoginBuilder builder = new ParseLoginBuilder(MainActivity.this);

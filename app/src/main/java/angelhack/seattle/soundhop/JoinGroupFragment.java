@@ -86,6 +86,7 @@ public class JoinGroupFragment extends Fragment {
                         .setPositiveButton("Create", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
                                 Globals.groupName = joinField.getText().toString();
+                                MainActivity.firebase.child("groupName").setValue(Globals.groupName);
                                 Globals.role = 0;
                                 getActivity().getSupportFragmentManager().beginTransaction()
                                         .replace(R.id.fragment, new MainActivityFragment()).commit();
