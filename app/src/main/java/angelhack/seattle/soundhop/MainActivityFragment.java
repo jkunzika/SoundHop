@@ -6,9 +6,8 @@ import android.graphics.Typeface;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.provider.MediaStore;
+import android.os.Environment;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -27,6 +26,7 @@ import android.widget.TextView;
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
 import com.nineoldandroids.animation.Animator;
+import com.nononsenseapps.filepicker.FilePickerActivity;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -182,10 +182,13 @@ public class MainActivityFragment extends Fragment {
         addSong.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent();
-                intent.setAction(android.content.Intent.ACTION_PICK);
-                intent.setData(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI);
-                getActivity().startActivityForResult(intent, Globals.PICKSONG);
+                pickNewSong();
+//                Globals.playlistArray.add(new SongItem(generateID(),generateID(),500,null));
+//                playlistAdapter.notifyDataSetChanged();
+//                Intent intent = new Intent();
+//                intent.setAction(android.content.Intent.ACTION_PICK);
+//                intent.setData(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI);
+//                getActivity().startActivityForResult(intent, Globals.PICKSONG);
             }
         });
         back.setOnClickListener(new View.OnClickListener() {
@@ -228,6 +231,29 @@ public class MainActivityFragment extends Fragment {
                 YoYo.with(Techniques.SlideInUp).duration(500).playOn(tabLayout);
             }
         }
+    }
+
+    public void pickNewSong(){
+        Intent i = new Intent(getActivity(), FilePickerActivity.class);
+        // This works if you defined the intent filter
+        // Intent i = new Intent(Intent.ACTION_GET_CONTENT);
+
+        // Set these depending on your use case. These are the defaults.
+        i.putExtra(FilePickerActivity.EXTRA_ALLOW_MULTIPLE, false);
+        i.putExtra(FilePickerActivity.EXTRA_ALLOW_CREATE_DIR, false);
+        i.putExtra(FilePickerActivity.EXTRA_MODE, FilePickerActivity.MODE_FILE);
+//        i.setData(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI);
+//        i.setAction(android.content.Intent.ACTION_PICK);
+
+
+        // Configure initial directory by specifying a String.
+        // You could specify a String like "/storage/emulated/0/", but that can
+        // dangerous. Always use Android's API calls to get paths to the SD-card or
+        // internal memory.
+        i.putExtra(FilePickerActivity.EXTRA_START_PATH, Environment.getExternalStorageDirectory().getPath());
+
+        getActivity().startActivityForResult(i, Globals.FILE_CODE);
+
     }
 
     public class SongAdapter extends ArrayAdapter<SongItem> {

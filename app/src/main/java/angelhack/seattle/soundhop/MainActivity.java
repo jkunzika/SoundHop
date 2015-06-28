@@ -1,8 +1,11 @@
 package angelhack.seattle.soundhop;
 
+import android.app.Activity;
+import android.content.ClipData;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBarActivity;
@@ -10,8 +13,11 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.nononsenseapps.filepicker.FilePickerActivity;
 import com.parse.ParseFacebookUtils;
 import com.parse.ui.ParseLoginBuilder;
+
+import java.util.ArrayList;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -24,10 +30,8 @@ public class MainActivity extends ActionBarActivity {
         Utils.setContext(this);
         ParseLoginBuilder builder = new ParseLoginBuilder(MainActivity.this);
         getSupportActionBar().hide();
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragment, new JoinGroupFragment()).commit();
-
-        //Temporarily commented out to test faster
-        //startActivityForResult(builder.build(), Globals.FBLOGIN);
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment,new JoinGroupFragment()).commit();
+        startActivityForResult(builder.build(), Globals.FBLOGIN);
     }
 
 
@@ -66,30 +70,82 @@ public class MainActivity extends ActionBarActivity {
             }
         }
         else if (requestCode == Globals.PICKSONG) { //When a song is picked
-            if (resultCode == RESULT_OK) { //If they selected a media file instead of clicking cancel
-                Uri mediaUri = data.getData();
-                String[] proj = { MediaStore.Audio.Media._ID,
-                        MediaStore.Audio.Media.DATA,
-                        MediaStore.Audio.Media.TITLE,
-                        MediaStore.Audio.Artists.ARTIST };
+            if (resultCode == RESULT_OK) { //If they selected a media file
+                processUri(data.getData());
+            }
+        } else if (requestCode == Globals.FILE_CODE && resultCode == Activity.RESULT_OK) {
+            if (data.getBooleanExtra(FilePickerActivity.EXTRA_ALLOW_MULTIPLE, false)) {
+                // For JellyBean and above
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                    ClipData clip = data.getClipData();
 
-                //Get the artist and band names of the song from the file
-                Cursor tempCursor = managedQuery(mediaUri,
-                        proj, null, null, null);
+                    if (clip != null) {
+                        for (int i = 0; i < clip.getItemCount(); i++) {
+                            Uri uri = clip.getItemAt(i).getUri();
+                            // Do something with the URI
+                            processUri(Utils.getAudioContentUri(uri));
 
-                tempCursor.moveToFirst(); //reset the cursor
-                int col_index;
-                do{
-                    col_index = tempCursor.getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE);
-                    artist_name = tempCursor.getString(col_index);
-                    col_index = tempCursor.getColumnIndexOrThrow(MediaStore.Audio.Artists.ARTIST);
-                    artist_band = tempCursor.getString(col_index);
-                }while(tempCursor.moveToNext());
+                        }
+                    }
+                    // For Ice Cream Sandwich
+                } else {
+                    ArrayList<String> paths = data.getStringArrayListExtra
+                            (FilePickerActivity.EXTRA_PATHS);
 
-                Globals.playlistArray.add(new SongItem(artist_name,artist_band,500, mediaUri));
-                MainActivityFragment.playlistAdapter.notifyDataSetChanged();
+                    if (paths != null) {
+                        for (String path: paths) {
+                            Uri uri = Uri.parse(path);
+                            // Do something with the URI
+                            processUri(Utils.getAudioContentUri(uri));
+
+                        }
+                    }
+                }
+
+            } else {
+                Uri uri = data.getData();
+                // Do something with the URI
+                processUri(Utils.getAudioContentUri(uri));
             }
         }
+
         ParseFacebookUtils.onActivityResult(requestCode, resultCode, data);
+    }
+
+    public void processUri(Uri mediaUri){
+        String[] proj = { MediaStore.Audio.Media._ID,
+                MediaStore.Audio.Media.DATA,
+                MediaStore.Audio.Media.TITLE,
+                MediaStore.Audio.Artists.ARTIST };
+
+        Cursor tempCursor = getContentResolver().query(mediaUri,
+                proj, null, null, null);
+
+        Cursor fullCursor = getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                proj, null, null, null);
+
+        try {
+            fullCursor.moveToFirst();
+            tempCursor.moveToFirst(); //reset the cursor
+            int col_index = -1;
+            int numSongs = tempCursor.getCount();
+            int currentNum = 0;
+            do {
+                col_index = tempCursor.getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE);
+                artist_name = tempCursor.getString(col_index);
+                col_index = tempCursor.getColumnIndexOrThrow(MediaStore.Audio.Artists.ARTIST);
+                artist_band = tempCursor.getString(col_index);
+                //do something with artist name here
+                //we can also move into different columns to fetch the other values
+
+                currentNum++;
+            } while (tempCursor.moveToNext());
+        } catch (NullPointerException e){
+            e.printStackTrace();
+        }
+
+        Globals.playlistArray.add(new SongItem(artist_name,artist_band,500, mediaUri));
+        MainActivityFragment.playlistAdapter.notifyDataSetChanged();
+
     }
 }
