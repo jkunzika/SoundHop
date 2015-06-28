@@ -35,7 +35,8 @@ public class debugUpdater extends AsyncTask<Void,Integer,Void> {
                 public void run() {
                     try{
                         //textView.setText(""+MainActivity.mediaPlayer.getCurrentPosition());
-                        textView.setText(""+(new Date().getTime()+parent.getResources().getInteger(R.integer.delay)));
+                        Integer delay = MainActivity.prefs.getInt("delay",0);
+                        textView.setText(""+(new Date().getTime()+delay));
                         //textView.setText(""+ new Date().getTime());
                     } catch(Exception e){e.printStackTrace();}
                 }

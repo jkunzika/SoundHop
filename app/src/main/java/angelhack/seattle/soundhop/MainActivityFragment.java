@@ -1,7 +1,10 @@
 package angelhack.seattle.soundhop;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -20,6 +23,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -45,6 +49,7 @@ import java.util.concurrent.Executors;
  */
 public class MainActivityFragment extends Fragment {
     final static String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    EditText joinField;
     Typeface Avenir_Light;
     static TextView groupTitle, tabTitle, tabArtist;
     View tabLayout, addSong, back;
@@ -53,6 +58,7 @@ public class MainActivityFragment extends Fragment {
     static SongAdapter playlistAdapter;
     MediaPlayer temp;
     long mPlayVal;
+    long timeStart;
 
     public MainActivityFragment() {
     }
@@ -95,7 +101,7 @@ public class MainActivityFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 SongItem cur = playlistAdapter.getItem(position);
-                if (temp!=null)
+                if (temp != null)
                     temp.stop();
                 tabPlayPause.setImageDrawable(getResources().getDrawable(R.drawable.play_ring));
                 temp = null;
@@ -156,22 +162,25 @@ public class MainActivityFragment extends Fragment {
         tabPlayPause.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (temp==null) { //If first play, then prepare things
+                if (temp == null) { //If first play, then prepare things
                     temp = new MediaPlayer();
                     temp.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                    try{
+                    try {
                         temp.setDataSource(getActivity().getApplicationContext(), Globals.curUri);
-                        temp.prepare(); } catch(Exception e){e.printStackTrace();}
+                        temp.prepare();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
-                MainActivity.firebase.child("playAt").setValue(getSynchedTime()+500);
+                MainActivity.firebase.child("playAt").setValue(getSynchedTime() + 1000);
                 if (!temp.isPlaying()) { //If it's not playing, then start playing
                     MainActivity.firebase.child("play").setValue(1);
                     //temp.start();
                     //startMusicService();
                     tabPlayPause.setImageDrawable(getResources().getDrawable(R.drawable.pause_ring));
-                }
-                else{ //If it's playing, then pause it.
+                } else { //If it's playing, then pause it.
                     //temp.pause();
+                    MainActivity.firebase.child("seekVal").setValue(temp.getCurrentPosition());
                     MainActivity.firebase.child("play").setValue(0);
                     tabPlayPause.setImageDrawable(getResources().getDrawable(R.drawable.play_ring));
                 }
@@ -182,9 +191,10 @@ public class MainActivityFragment extends Fragment {
         groupTitle.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId==6) {
+                if (actionId == 6) {
                     groupTitle.clearFocus();
-                    InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(
+                    MainActivity.firebase.child("groupName").setValue(groupTitle.getText().toString());
+                    InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(
                             Context.INPUT_METHOD_SERVICE);
                     //txtName is a reference of an EditText Field
                     imm.hideSoftInputFromWindow(groupTitle.getWindowToken(), 0);
@@ -208,8 +218,33 @@ public class MainActivityFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 getActivity().getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.fragment,new JoinGroupFragment())
+                        .replace(R.id.fragment, new JoinGroupFragment())
                         .commit();
+            }
+        });
+
+        v.findViewById(R.id.add_user).setOnClickListener(new View.OnClickListener() { //Let's calibrate the delay
+            @Override
+            public void onClick(View v) {
+                joinField = new EditText(getActivity());
+                joinField.setHint("Enter Delay");
+                joinField.setText(""+MainActivity.prefs.getInt("delay",0));
+                new AlertDialog.Builder(getActivity())
+                        .setView(joinField)
+                        .setTitle("Delay:")
+                        .setView(joinField)
+                        .setPositiveButton("Set Delay", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                SharedPreferences.Editor editor = MainActivity.prefs.edit();
+                                editor.putInt("delay", Integer.parseInt(joinField.getText().toString()));
+                                editor.commit();
+                            }
+                        }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        // Do nothing.
+                    }
+                }).show();
             }
         });
 
@@ -227,21 +262,39 @@ public class MainActivityFragment extends Fragment {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.getValue()!=null) { //If there is a value for play
-                    Toast.makeText(getActivity(),"Got the command.", Toast.LENGTH_SHORT).show();
                     mPlayVal = (long) dataSnapshot.getValue(); //Gets the play value, 0 or 1
 
                     MainActivity.firebase.child("playAt").addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
-                            long targetPlayPauseTime = (long)dataSnapshot.getValue(); //Gets what time the playback should begin
-                            while (getSynchedTime() < targetPlayPauseTime){ /*Do nothing. Just wait. Welcome to hackathon hack solutions.*/ }
-                            if (mPlayVal == 1 && temp!=null) {
-                                if (!temp.isPlaying())
-                                    temp.start();
-                            } else if (temp!=null){
-                                if (temp.isPlaying())
-                                    temp.pause();
-                            }
+                            timeStart = (long)dataSnapshot.getValue(); //Gets what time the playback should begin
+                            MainActivity.firebase.child("seekVal").addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    if (temp!=null) {
+                                        temp.seekTo(Long.valueOf((long) dataSnapshot.getValue()).intValue());
+                                    }
+                                    while (getSynchedTime() < timeStart){ /*Do nothing. Just wait. Welcome to hackathon hack solutions.*/ }
+                                    if (mPlayVal == 1 && temp!=null) {
+                                        if (!temp.isPlaying()) {
+                                            temp.start();
+                                            long before = new Date().getTime();
+                                            tabPlayPause.setImageDrawable(getResources().getDrawable(R.drawable.pause_ring));
+                                            System.out.println("doing that took "+(new Date().getTime()-before)+" milliseconds.");
+                                        }
+                                    } else if (temp!=null){
+                                        if (temp.isPlaying()) {
+                                            temp.pause();
+                                            tabPlayPause.setImageDrawable(getResources().getDrawable(R.drawable.play_ring));
+                                        }
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(FirebaseError firebaseError) {
+
+                                }
+                            });
                         }
 
                         @Override
@@ -253,6 +306,19 @@ public class MainActivityFragment extends Fragment {
             }
 
             @Override public void onCancelled(FirebaseError firebaseError) {}
+        });
+
+        MainActivity.firebase.child("groupName").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (!groupTitle.getText().equals(""+dataSnapshot.getValue()))
+                    groupTitle.setText(""+dataSnapshot.getValue());
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+
+            }
         });
 
         new debugUpdater(getActivity(),(TextView)v.findViewById(R.id.debug_text)).executeOnExecutor(Executors.newSingleThreadExecutor());
@@ -296,7 +362,7 @@ public class MainActivityFragment extends Fragment {
         // Intent i = new Intent(Intent.ACTION_GET_CONTENT);
 
         // Set these depending on your use case. These are the defaults.
-        i.putExtra(FilePickerActivity.EXTRA_ALLOW_MULTIPLE, false);
+        i.putExtra(FilePickerActivity.EXTRA_ALLOW_MULTIPLE, true);
         i.putExtra(FilePickerActivity.EXTRA_ALLOW_CREATE_DIR, false);
         i.putExtra(FilePickerActivity.EXTRA_MODE, FilePickerActivity.MODE_FILE);
         i.setData(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI);

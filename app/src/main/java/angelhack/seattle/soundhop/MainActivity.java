@@ -2,7 +2,9 @@ package angelhack.seattle.soundhop;
 
 import android.app.Activity;
 import android.content.ClipData;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
@@ -24,6 +26,7 @@ import java.util.ArrayList;
 public class MainActivity extends ActionBarActivity {
     public static Activity parent;
     public static Firebase firebase;
+    public static SharedPreferences prefs;
     String audioID, artist_name, artist_band;
 
     @Override
@@ -38,6 +41,7 @@ public class MainActivity extends ActionBarActivity {
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment,new JoinGroupFragment()).commit();
         //startActivityForResult(builder.build(), Globals.FBLOGIN); //Temporarily commented out for debugging speed
         parent = this;
+        prefs = getPreferences(Context.MODE_PRIVATE);
     }
 
 
