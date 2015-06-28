@@ -1,8 +1,8 @@
 package angelhack.seattle.soundhop;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -10,7 +10,7 @@ import com.parse.ParseFacebookUtils;
 import com.parse.ui.ParseLoginBuilder;
 
 
-public class MainActivity extends Activity {
+public class MainActivity extends ActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,8 +18,9 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
         ParseLoginBuilder builder = new ParseLoginBuilder(MainActivity.this);
         startActivityForResult(builder.build(), 0);
-
+        getSupportActionBar().hide();
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -48,5 +49,4 @@ public class MainActivity extends Activity {
         super.onActivityResult(requestCode, resultCode, data);
         ParseFacebookUtils.onActivityResult(requestCode, resultCode, data);
     }
-
 }
