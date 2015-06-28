@@ -29,7 +29,7 @@
             android:id="@+id/group_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="AngelHacks Seattle"
+            android:text="AngelHack Seattle"
             android:textColor="#ffffff"
             android:textSize="37sp"
             android:paddingTop="40dp"
