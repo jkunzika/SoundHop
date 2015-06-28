@@ -14,6 +14,7 @@ public class debugUpdater extends AsyncTask<Void,Integer,Void> {
     private final String TAG = "Async_Schedule_Updater";
     private static TextView textView;
     private static Activity parent;
+    public static int delay=0;
 
     public debugUpdater(Activity p, TextView tv){
         parent=p;
@@ -29,13 +30,16 @@ public class debugUpdater extends AsyncTask<Void,Integer,Void> {
     @Override
     protected Void doInBackground(Void... params) {
         Log.e(TAG, "Started Updating Debug");
+        while(MainActivity.prefs==null){ /*Hackathon hacky way. Deal with it.*/ }
+
+        delay = MainActivity.prefs.getInt("delay",0);
+
         while(parent!=null){
             parent.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     try{
                         //textView.setText(""+MainActivity.mediaPlayer.getCurrentPosition());
-                        Integer delay = MainActivity.prefs.getInt("delay",0);
                         textView.setText(""+(new Date().getTime()+delay));
                         //textView.setText(""+ new Date().getTime());
                     } catch(Exception e){e.printStackTrace();}

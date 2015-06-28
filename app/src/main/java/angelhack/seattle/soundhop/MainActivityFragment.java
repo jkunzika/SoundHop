@@ -59,6 +59,7 @@ public class MainActivityFragment extends Fragment {
     MediaPlayer temp;
     long mPlayVal;
     long timeStart;
+    TextView debugView;
 
     public MainActivityFragment() {
     }
@@ -92,6 +93,7 @@ public class MainActivityFragment extends Fragment {
         tabPlayPause = (ImageView)v.findViewById(R.id.tab_play);
         addSong = v.findViewById(R.id.addSongButton);
         back = v.findViewById(R.id.back_button);
+        debugView = (TextView)v.findViewById(R.id.debug_text);
 
         //Set up the song listview
         playlistAdapter = new SongAdapter(Globals.playlistArray);
@@ -172,7 +174,7 @@ public class MainActivityFragment extends Fragment {
                         e.printStackTrace();
                     }
                 }
-                MainActivity.firebase.child("playAt").setValue(getSynchedTime() + 1000);
+                MainActivity.firebase.child("playAt").setValue(getSynchedTime() + 2000); //Change push-action delay here
                 if (!temp.isPlaying()) { //If it's not playing, then start playing
                     MainActivity.firebase.child("play").setValue(1);
                     //temp.start();
@@ -225,7 +227,12 @@ public class MainActivityFragment extends Fragment {
 
         v.findViewById(R.id.add_user).setOnClickListener(new View.OnClickListener() { //Let's calibrate the delay
             @Override
-            public void onClick(View v) {
+            public void onClick(View v) { //Delay Dialog
+                if (debugView.getVisibility()==View.INVISIBLE){
+                    debugView.setVisibility(View.VISIBLE);
+                }
+                else
+                    debugView.setVisibility(View.INVISIBLE);
                 joinField = new EditText(getActivity());
                 joinField.setHint("Enter Delay");
                 joinField.setText(""+MainActivity.prefs.getInt("delay",0));
@@ -238,6 +245,7 @@ public class MainActivityFragment extends Fragment {
                                 SharedPreferences.Editor editor = MainActivity.prefs.edit();
                                 editor.putInt("delay", Integer.parseInt(joinField.getText().toString()));
                                 editor.commit();
+                                debugUpdater.delay = Integer.parseInt(joinField.getText().toString());
                             }
                         }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
 
@@ -321,7 +329,9 @@ public class MainActivityFragment extends Fragment {
             }
         });
 
-        new debugUpdater(getActivity(),(TextView)v.findViewById(R.id.debug_text)).executeOnExecutor(Executors.newSingleThreadExecutor());
+        MainActivity.firebase.child("seekVal").setValue(0);
+
+        new debugUpdater(getActivity(), debugView).executeOnExecutor(Executors.newSingleThreadExecutor());
 
         return v;
     }

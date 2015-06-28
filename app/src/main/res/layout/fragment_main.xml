@@ -142,6 +142,6 @@
         android:text="147092938942"
         android:layout_centerInParent="true"
         android:textSize="30sp"
-        android:visibility="visible"/>
+        android:visibility="invisible"/>
 
 </RelativeLayout>
