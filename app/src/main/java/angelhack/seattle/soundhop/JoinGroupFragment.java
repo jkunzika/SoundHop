@@ -58,7 +58,7 @@ public class JoinGroupFragment extends Fragment {
                         .setPositiveButton("Join", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
                                 Globals.targetIP = joinField.getText().toString();
-                                Globals.isHost = false;
+                                Globals.role = 1;
                                 getActivity().getSupportFragmentManager().beginTransaction()
                                         .replace(R.id.fragment, new MainActivityFragment()).commit();
                             }
@@ -74,7 +74,7 @@ public class JoinGroupFragment extends Fragment {
         create.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Globals.isHost = true;
+                Globals.role = 0;
                 getActivity().getSupportFragmentManager().beginTransaction()
                         .replace(R.id.fragment, new MainActivityFragment()).commit();
             }

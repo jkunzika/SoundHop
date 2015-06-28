@@ -1,5 +1,7 @@
 package angelhack.seattle.soundhop;
 
+import android.net.Uri;
+
 import java.util.UUID;
 
 /**
@@ -10,12 +12,14 @@ public class SongItem {
     private String artist;
     private long duration;
     private UUID id;
+    private Uri uri;
 
-    public SongItem(String n, String a, long d){
+    public SongItem(String n, String a, long d, Uri u){
         this.name = n;
         this.artist = a;
         this.duration = d;
         this.id = UUID.randomUUID();
+        this.uri = u;
     }
 
     public String getName() {
@@ -33,4 +37,6 @@ public class SongItem {
     public UUID getID() {
         return id;
     }
+
+    public Uri getUri(){ return uri;}
 }

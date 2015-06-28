@@ -1,11 +1,13 @@
 package angelhack.seattle.soundhop;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Typeface;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -16,7 +18,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.daimajia.androidanimations.library.Techniques;
@@ -25,7 +26,6 @@ import com.nineoldandroids.animation.Animator;
 
 import java.util.ArrayList;
 import java.util.Random;
-import java.util.UUID;
 
 
 /**
@@ -38,7 +38,8 @@ public class MainActivityFragment extends Fragment {
     View tabLayout, addSong;
     ImageView tabPlayPause;
     ListView songList;
-    SongAdapter playlistAdapter;
+    static SongAdapter playlistAdapter;
+    MediaPlayer temp;
 
     public MainActivityFragment() {
     }
@@ -80,13 +81,31 @@ public class MainActivityFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 SongItem cur = playlistAdapter.getItem(position);
+                if (temp!=null)
+                    temp.stop();
+                tabPlayPause.setImageDrawable(getResources().getDrawable(R.drawable.play_ring));
+                temp = null;
                 respecTab(cur);
             }
         });
         tabPlayPause.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                respecTab(null);
+                if (temp==null) { //If first play, then prepare things
+                    temp = new MediaPlayer();
+                    temp.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                    try{
+                        temp.setDataSource(getActivity().getApplicationContext(), Globals.curUri);
+                        temp.prepare(); } catch(Exception e){e.printStackTrace();}
+                }
+                if (!temp.isPlaying()) { //If it's not playing, then start playing
+                    temp.start();
+                    tabPlayPause.setImageDrawable(getResources().getDrawable(R.drawable.pause_ring));
+                }
+                else{ //If it's playing, then pause it.
+                    temp.pause();
+                    tabPlayPause.setImageDrawable(getResources().getDrawable(R.drawable.play_ring));
+                }
             }
         });
 
@@ -107,13 +126,15 @@ public class MainActivityFragment extends Fragment {
         addSong.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Globals.playlistArray.add(new SongItem(generateID(),generateID(),500));
-                playlistAdapter.notifyDataSetChanged();
+                Intent intent = new Intent();
+                intent.setAction(android.content.Intent.ACTION_PICK);
+                intent.setData(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI);
+                getActivity().startActivityForResult(intent, Globals.PICKSONG);
             }
         });
 
         //Configure things depending on whether you're host or not
-        if (!Globals.isHost)
+        if (Globals.role==1) //1 == Client
             groupTitle.setFocusable(false);
         return v;
     }
@@ -135,6 +156,7 @@ public class MainActivityFragment extends Fragment {
         else {
             tabTitle.setText(s.getName());
             tabArtist.setText(s.getArtist());
+            Globals.curUri = s.getUri();
             if (tabLayout.getVisibility() == View.INVISIBLE) {
                 tabLayout.setVisibility(View.VISIBLE);
                 YoYo.with(Techniques.SlideInUp).duration(500).playOn(tabLayout);
