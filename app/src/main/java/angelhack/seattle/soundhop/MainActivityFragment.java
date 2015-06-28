@@ -39,7 +39,7 @@ public class MainActivityFragment extends Fragment {
     final static String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
     Typeface Avenir_Light;
     static TextView groupTitle, tabTitle, tabArtist;
-    View tabLayout, addSong;
+    View tabLayout, addSong, back;
     ImageView tabPlayPause;
     ListView songList;
     static SongAdapter playlistAdapter;
@@ -76,6 +76,7 @@ public class MainActivityFragment extends Fragment {
         tabArtist = (TextView)v.findViewById(R.id.tab_artist);
         tabPlayPause = (ImageView)v.findViewById(R.id.tab_play);
         addSong = v.findViewById(R.id.addSongButton);
+        back = v.findViewById(R.id.back_button);
 
         //Set up the song listview
         playlistAdapter = new SongAdapter(Globals.playlistArray);
@@ -187,10 +188,20 @@ public class MainActivityFragment extends Fragment {
                 getActivity().startActivityForResult(intent, Globals.PICKSONG);
             }
         });
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getActivity().getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.fragment,new JoinGroupFragment())
+                        .commit();
+            }
+        });
 
         //Configure things depending on whether you're host or not
         if (Globals.role==1) //1 == Client
             groupTitle.setFocusable(false);
+        if (Globals.groupName!=null)
+            groupTitle.setText(Globals.groupName);
         return v;
     }
 
