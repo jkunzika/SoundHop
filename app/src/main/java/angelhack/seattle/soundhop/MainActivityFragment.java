@@ -10,9 +10,13 @@ import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
@@ -88,6 +92,57 @@ public class MainActivityFragment extends Fragment {
                 respecTab(cur);
             }
         });
+
+        songList.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
+        songList.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
+            @Override
+            public void onItemCheckedStateChanged(android.view.ActionMode actionMode, int i, long l, boolean b) {
+
+            }
+
+            @Override
+            public boolean onCreateActionMode(android.view.ActionMode mode, Menu menu) {
+                MenuInflater inflater = mode.getMenuInflater();
+                inflater.inflate(R.menu.playlist_context, menu);
+                return true;
+            }
+
+            @Override
+            public boolean onPrepareActionMode(android.view.ActionMode actionMode, Menu menu) {
+                return false;
+            }
+
+            @Override
+            public boolean onActionItemClicked(android.view.ActionMode mode, MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.menu_item_delete_song: //If they want to delete the items they selected
+                        for (int i=Globals.playlistArray.size()-1;i>-1;i--){
+                            if (songList.isItemChecked(i)) {
+                                SongItem current = Globals.playlistArray.get(i);
+                                if (current.getUri() == Globals.curUri){ //If the song's currently being played, let's stop it and have the bar slide out
+                                    if (temp!=null)
+                                        temp.stop();
+                                    tabPlayPause.setImageDrawable(getResources().getDrawable(R.drawable.play_ring));
+                                    temp = null;
+                                    respecTab(null);
+                                }
+                                Globals.playlistArray.remove(i);
+                            }
+                            playlistAdapter.notifyDataSetChanged();
+                            mode.finish();
+                        }
+                        return true;
+                    default:
+                        return false;
+                }
+            }
+
+            @Override
+            public void onDestroyActionMode(android.view.ActionMode mode) {
+                //Do Something
+            }
+        });
+
         tabPlayPause.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

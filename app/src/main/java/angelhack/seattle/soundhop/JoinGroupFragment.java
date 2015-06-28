@@ -65,6 +65,9 @@ public class JoinGroupFragment extends Fragment {
             }
         });
 
+        //Temporarily here to make testing faster
+        animateTransition();
+
         return v;
     }
 
