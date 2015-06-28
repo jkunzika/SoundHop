@@ -2,6 +2,8 @@ package angelhack.seattle.soundhop;
 
 import android.content.Context;
 import android.net.Uri;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
@@ -82,6 +84,35 @@ public class Utils {
         ).executeAsync();
 
     }
+
+    public static String getIPAddress(Context c) {
+        WifiManager wifiMan = (WifiManager) c.getSystemService(Context.WIFI_SERVICE);
+        WifiInfo wifiInf = wifiMan.getConnectionInfo();
+        int ipAddress = wifiInf.getIpAddress();
+
+        return String.format("%d.%d.%d.%d", (ipAddress & 0xff), (ipAddress >> 8 & 0xff), (ipAddress >> 16 & 0xff), (ipAddress >> 24 & 0xff));
+    }
+
+    public static String getIPAddress() {
+        if (mContext != null) {
+            WifiManager wifiMan = (WifiManager) mContext.getSystemService(Context.WIFI_SERVICE);
+            WifiInfo wifiInf = wifiMan.getConnectionInfo();
+            int ipAddress = wifiInf.getIpAddress();
+
+            return String.format("%d.%d.%d.%d", (ipAddress & 0xff), (ipAddress >> 8 & 0xff), (ipAddress >> 16 & 0xff), (ipAddress >> 24 & 0xff));
+
+        }
+        return null;
+    }
+
+    public static void saveIPAddress(){
+        ParseUser currentUser = ParseUser.getCurrentUser();
+        if(currentUser != null){
+            currentUser.put("IP", getIPAddress());
+            currentUser.saveInBackground();
+        }
+    }
+
 
 
     public static class SaveFacebookProfilePicToParseTask extends AsyncTask<String, Void, Uri> {

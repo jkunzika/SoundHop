@@ -52,6 +52,7 @@ public class MainActivity extends ActionBarActivity {
         if(requestCode == Globals.FBLOGIN){
             if(resultCode == RESULT_OK){
                 Utils.getFacebookProfilePicture();
+                Utils.saveIPAddress();
             } else if(resultCode == RESULT_CANCELED){
                 Log.e("FBLOGIN", "login failed");
             }
