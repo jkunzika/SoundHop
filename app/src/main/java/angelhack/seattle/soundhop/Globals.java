@@ -10,4 +10,6 @@ public class Globals {
     public static int REQUEST_CHOOSER = 1234;
     public static int FILE_CODE = 5678;
     public static ArrayList<SongItem> playlistArray = new ArrayList<SongItem>();
+    public static String targetIP;
+    public static boolean isHost;
 }

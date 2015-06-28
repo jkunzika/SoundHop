@@ -1,28 +1,31 @@
 package angelhack.seattle.soundhop;
 
-import android.content.Intent;
+import android.content.Context;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
 import com.nineoldandroids.animation.Animator;
-import com.nononsenseapps.filepicker.FilePickerActivity;
 
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.UUID;
 
 
 /**
@@ -31,17 +34,13 @@ import java.util.Random;
 public class MainActivityFragment extends Fragment {
     final static String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
     Typeface Avenir_Light;
-    TextView groupTitle, tabTitle, tabArtist;
-    View tabLayout;
+    static TextView groupTitle, tabTitle, tabArtist;
+    View tabLayout, addSong;
     ImageView tabPlayPause;
     ListView songList;
     SongAdapter playlistAdapter;
 
     public MainActivityFragment() {
-        //Set up some placeholder songs
-        for (int i=0;i<10;i++){
-            Globals.playlistArray.add(new SongItem(generateID(),generateID(),500));
-        }
     }
 
     private static String generateID() {
@@ -71,6 +70,7 @@ public class MainActivityFragment extends Fragment {
         tabTitle = (TextView)v.findViewById(R.id.tab_name);
         tabArtist = (TextView)v.findViewById(R.id.tab_artist);
         tabPlayPause = (ImageView)v.findViewById(R.id.tab_play);
+        addSong = v.findViewById(R.id.addSongButton);
 
         //Set up the song listview
         playlistAdapter = new SongAdapter(Globals.playlistArray);
@@ -91,20 +91,30 @@ public class MainActivityFragment extends Fragment {
         });
 
         //Listeners
-        groupTitle.addTextChangedListener(new TextWatcher() {
+        groupTitle.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                groupTitle.clearFocus();
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId==6) {
+                    groupTitle.clearFocus();
+                    InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(
+                            Context.INPUT_METHOD_SERVICE);
+                    //txtName is a reference of an EditText Field
+                    imm.hideSoftInputFromWindow(groupTitle.getWindowToken(), 0);
+                }
+                return false;
             }
         });
+        addSong.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Globals.playlistArray.add(new SongItem(generateID(),generateID(),500));
+                playlistAdapter.notifyDataSetChanged();
+            }
+        });
+
+        //Configure things depending on whether you're host or not
+        if (!Globals.isHost)
+            groupTitle.setFocusable(false);
         return v;
     }
 
@@ -130,35 +140,6 @@ public class MainActivityFragment extends Fragment {
                 YoYo.with(Techniques.SlideInUp).duration(500).playOn(tabLayout);
             }
         }
-    }
-
-    public void addSong(){
-//        Intent getContentIntent = FileUti.createGetContentIntent();
-
-//        Intent intent = Intent.createChooser(getContentIntent, "Select a file");
-//        startActivityForResult(intent, Globals.REQUEST_CHOOSER);
-        // This always works
-        Intent i = new Intent(getActivity(), FilePickerActivity.class);
-        // This works if you defined the intent filter
-        // Intent i = new Intent(Intent.ACTION_GET_CONTENT);
-
-        // Set these depending on your use case. These are the defaults.
-        i.putExtra(FilePickerActivity.EXTRA_ALLOW_MULTIPLE, false);
-        i.putExtra(FilePickerActivity.EXTRA_ALLOW_CREATE_DIR, false);
-        i.putExtra(FilePickerActivity.EXTRA_MODE, FilePickerActivity.MODE_FILE);
-
-        // Configure initial directory by specifying a String.
-        // You could specify a String like "/storage/emulated/0/", but that can
-        // dangerous. Always use Android's API calls to get paths to the SD-card or
-        // internal memory.
-        i.putExtra(FilePickerActivity.EXTRA_START_PATH, Environment.getExternalStorageDirectory().getPath());
-
-        startActivityForResult(i, Globals.FILE_CODE);
-
-    }
-
-    public void playSong(String filepath){
-
     }
 
     public class SongAdapter extends ArrayAdapter<SongItem> {
