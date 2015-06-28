@@ -76,9 +76,27 @@ public class JoinGroupFragment extends Fragment {
         create.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Globals.role = 0;
-                getActivity().getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.fragment, new MainActivityFragment()).commit();
+                joinField = new EditText(getActivity());
+                joinField.setHint("Enter Group Name");
+
+                new AlertDialog.Builder(getActivity())
+                        .setView(joinField)
+                        .setTitle("Group Name:")
+                        .setView(joinField)
+                        .setPositiveButton("Create", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                Globals.groupName = joinField.getText().toString();
+                                Globals.role = 0;
+                                getActivity().getSupportFragmentManager().beginTransaction()
+                                        .replace(R.id.fragment, new MainActivityFragment()).commit();
+                            }
+                        }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        // Do nothing.
+                    }
+                }).show();
+
             }
         });
 

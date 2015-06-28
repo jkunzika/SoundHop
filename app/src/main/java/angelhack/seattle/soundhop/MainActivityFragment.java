@@ -231,7 +231,7 @@ public class MainActivityFragment extends Fragment {
                 @Override public void onAnimationRepeat(Animator animation) {}
             }).playOn(tabLayout);
         }
-        else {
+        else if (s!=null) {
             tabTitle.setText(s.getName());
             tabArtist.setText(s.getArtist());
             Globals.curUri = s.getUri();
