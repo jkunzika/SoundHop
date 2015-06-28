@@ -1,13 +1,17 @@
 package angelhack.seattle.soundhop;
 
+import android.content.Context;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
@@ -30,7 +34,7 @@ import java.util.UUID;
 public class MainActivityFragment extends Fragment {
     final static String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
     Typeface Avenir_Light;
-    TextView groupTitle, tabTitle, tabArtist;
+    static TextView groupTitle, tabTitle, tabArtist;
     View tabLayout, addSong;
     ImageView tabPlayPause;
     ListView songList;
@@ -87,18 +91,17 @@ public class MainActivityFragment extends Fragment {
         });
 
         //Listeners
-        groupTitle.addTextChangedListener(new TextWatcher() {
+        groupTitle.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                groupTitle.clearFocus();
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId==6) {
+                    groupTitle.clearFocus();
+                    InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(
+                            Context.INPUT_METHOD_SERVICE);
+                    //txtName is a reference of an EditText Field
+                    imm.hideSoftInputFromWindow(groupTitle.getWindowToken(), 0);
+                }
+                return false;
             }
         });
         addSong.setOnClickListener(new View.OnClickListener() {
