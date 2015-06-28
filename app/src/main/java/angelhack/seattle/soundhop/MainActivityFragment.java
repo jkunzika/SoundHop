@@ -31,16 +31,12 @@ public class MainActivityFragment extends Fragment {
     final static String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
     Typeface Avenir_Light;
     TextView groupTitle, tabTitle, tabArtist;
-    View tabLayout;
+    View tabLayout, addSong;
     ImageView tabPlayPause;
     ListView songList;
     SongAdapter playlistAdapter;
 
     public MainActivityFragment() {
-        //Set up some placeholder songs
-        for (int i=0;i<10;i++){
-            Globals.playlistArray.add(new SongItem(generateID(),generateID(),500));
-        }
     }
 
     private static String generateID() {
@@ -70,6 +66,7 @@ public class MainActivityFragment extends Fragment {
         tabTitle = (TextView)v.findViewById(R.id.tab_name);
         tabArtist = (TextView)v.findViewById(R.id.tab_artist);
         tabPlayPause = (ImageView)v.findViewById(R.id.tab_play);
+        addSong = v.findViewById(R.id.addSongButton);
 
         //Set up the song listview
         playlistAdapter = new SongAdapter(Globals.playlistArray);
@@ -104,6 +101,17 @@ public class MainActivityFragment extends Fragment {
                 groupTitle.clearFocus();
             }
         });
+        addSong.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Globals.playlistArray.add(new SongItem(generateID(),generateID(),500));
+                playlistAdapter.notifyDataSetChanged();
+            }
+        });
+
+        //Configure things depending on whether you're host or not
+        if (!Globals.isHost)
+            groupTitle.setFocusable(false);
         return v;
     }
 

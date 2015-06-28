@@ -1,5 +1,7 @@
 package angelhack.seattle.soundhop;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -11,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -27,7 +30,8 @@ import java.util.Random;
  * A placeholder fragment containing a simple view.
  */
 public class JoinGroupFragment extends Fragment {
-    View fbLogin,join,create;
+    static View fbLogin,join,create;
+    static TextView joinField;
 
     public JoinGroupFragment() {
     }
@@ -41,21 +45,54 @@ public class JoinGroupFragment extends Fragment {
         create = v.findViewById(R.id.login_create);
 
         //Configure listeners
-        create.setOnClickListener(new View.OnClickListener() {
+        join.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                
+                joinField = new EditText(getActivity());
+                joinField.setHint("Enter IP Address");
+
+                new AlertDialog.Builder(getActivity())
+                        .setView(joinField)
+                        .setTitle("IP Address:")
+                        .setView(joinField)
+                        .setPositiveButton("Join", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                Globals.targetIP = joinField.getText().toString();
+                                Globals.isHost = false;
+                                getActivity().getSupportFragmentManager().beginTransaction()
+                                        .replace(R.id.fragment, new MainActivityFragment()).commit();
+                            }
+                        }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        // Do nothing.
+                    }
+                }).show();
             }
         });
 
+        create.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Globals.isHost = true;
+                getActivity().getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.fragment, new MainActivityFragment()).commit();
+            }
+        });
+
+        return v;
+    }
+
+    public static void animateTransition(){
+        fbLogin.setVisibility(View.INVISIBLE);
+        join.setVisibility(View.VISIBLE);
+        create.setVisibility(View.VISIBLE);
+        /*
         //Animate buttons to slide in, and fb login button to slide out
-        YoYo.with(Techniques.SlideOutLeft).duration(500).delay(1000).withListener(new Animator.AnimatorListener() {
+        YoYo.with(Techniques.SlideOutLeft).duration(1000).delay(1500).withListener(new Animator.AnimatorListener() {
             @Override
             public void onAnimationStart(Animator animation) {
-                YoYo.with(Techniques.SlideInLeft).duration(500).playOn(join);
-                YoYo.with(Techniques.SlideInLeft).duration(500).playOn(create);
-                join.setVisibility(View.VISIBLE);
-                create.setVisibility(View.VISIBLE);
+
             }
 
             @Override
@@ -73,7 +110,48 @@ public class JoinGroupFragment extends Fragment {
 
             }
         }).playOn(fbLogin);
+        YoYo.with(Techniques.SlideInRight).duration(1000).delay(1500).withListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                join.setVisibility(View.VISIBLE);
+            }
 
-        return v;
+            @Override
+            public void onAnimationEnd(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+
+            }
+        }).playOn(join);
+        YoYo.with(Techniques.SlideInRight).duration(1000).delay(1500).withListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                create.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+
+            }
+        }).playOn(create);
+        */
     }
 }

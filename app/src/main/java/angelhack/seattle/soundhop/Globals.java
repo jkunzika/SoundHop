@@ -8,4 +8,6 @@ import java.util.ArrayList;
 public class Globals {
     public static int FBLOGIN = 1;
     public static ArrayList<SongItem> playlistArray = new ArrayList<SongItem>();
+    public static String targetIP;
+    public static boolean isHost;
 }

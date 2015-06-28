@@ -20,6 +20,7 @@ public class MainActivity extends ActionBarActivity {
         Utils.setContext(this);
         ParseLoginBuilder builder = new ParseLoginBuilder(MainActivity.this);
         getSupportActionBar().hide();
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment,new JoinGroupFragment()).commit();
         startActivityForResult(builder.build(), Globals.FBLOGIN);
     }
 
@@ -53,6 +54,7 @@ public class MainActivity extends ActionBarActivity {
             if(resultCode == RESULT_OK){
                 Utils.getFacebookProfilePicture();
                 Utils.saveIPAddress();
+                JoinGroupFragment.animateTransition();
             } else if(resultCode == RESULT_CANCELED){
                 Log.e("FBLOGIN", "login failed");
             }
