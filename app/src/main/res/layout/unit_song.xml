@@ -5,7 +5,7 @@
     android:paddingLeft="20dp"
     android:paddingTop="20dp"
     android:paddingBottom="20dp"
-    android:background="#ffffff">
+    android:background="@drawable/background_activated">
 
     <TextView
         android:id="@+id/unit_name"

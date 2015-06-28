@@ -24,8 +24,10 @@ public class MainActivity extends ActionBarActivity {
         Utils.setContext(this);
         ParseLoginBuilder builder = new ParseLoginBuilder(MainActivity.this);
         getSupportActionBar().hide();
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragment,new JoinGroupFragment()).commit();
-        startActivityForResult(builder.build(), Globals.FBLOGIN);
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment, new JoinGroupFragment()).commit();
+
+        //Temporarily commented out to test faster
+        //startActivityForResult(builder.build(), Globals.FBLOGIN);
     }
 
 
@@ -64,29 +66,24 @@ public class MainActivity extends ActionBarActivity {
             }
         }
         else if (requestCode == Globals.PICKSONG) { //When a song is picked
-            if (resultCode == RESULT_OK) { //If they selected a media file
+            if (resultCode == RESULT_OK) { //If they selected a media file instead of clicking cancel
                 Uri mediaUri = data.getData();
                 String[] proj = { MediaStore.Audio.Media._ID,
                         MediaStore.Audio.Media.DATA,
                         MediaStore.Audio.Media.TITLE,
                         MediaStore.Audio.Artists.ARTIST };
 
+                //Get the artist and band names of the song from the file
                 Cursor tempCursor = managedQuery(mediaUri,
                         proj, null, null, null);
 
                 tempCursor.moveToFirst(); //reset the cursor
-                int col_index=-1;
-                int numSongs=tempCursor.getCount();
-                int currentNum=0;
+                int col_index;
                 do{
                     col_index = tempCursor.getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE);
                     artist_name = tempCursor.getString(col_index);
                     col_index = tempCursor.getColumnIndexOrThrow(MediaStore.Audio.Artists.ARTIST);
                     artist_band = tempCursor.getString(col_index);
-                    //do something with artist name here
-                    //we can also move into different columns to fetch the other values
-
-                    currentNum++;
                 }while(tempCursor.moveToNext());
 
                 Globals.playlistArray.add(new SongItem(artist_name,artist_band,500, mediaUri));

@@ -1,0 +1,7 @@
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <color name="song_activated">#ffff4e7c</color>
+    <color name="song_pressed">#fff5f5f5</color>
+    <color name="song_default">#ffffff</color>
+
+</resources>
