@@ -21,8 +21,6 @@ public class MainActivity extends ActionBarActivity {
         ParseLoginBuilder builder = new ParseLoginBuilder(MainActivity.this);
         getSupportActionBar().hide();
         startActivityForResult(builder.build(), Globals.FBLOGIN);
-
-
     }
 
 

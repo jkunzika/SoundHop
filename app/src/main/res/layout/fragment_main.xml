@@ -37,6 +37,12 @@
             android:inputType="textNoSuggestions"/>
     </RelativeLayout>
 
+    <ListView
+        android:id="@+id/songs_listview"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/header_layout"/>
+
     <!--Add Song Button-->
     <com.gc.materialdesign.views.ButtonFloat
         android:id="@+id/buttonFloat"
@@ -50,12 +56,6 @@
         android:hapticFeedbackEnabled="true"
         materialdesign:animate="false"
         materialdesign:iconDrawable="@drawable/ic_action_new"/>
-
-    <ListView
-        android:id="@+id/songs_listview"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/header_layout"/>
 
     <!--Bottom Now Playing Tabs-->
     <RelativeLayout
