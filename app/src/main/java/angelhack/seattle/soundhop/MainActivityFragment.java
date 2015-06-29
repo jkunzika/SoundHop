@@ -174,7 +174,7 @@ public class MainActivityFragment extends Fragment {
                         e.printStackTrace();
                     }
                 }
-                MainActivity.firebase.child("playAt").setValue(getSynchedTime() + 2000); //Change push-action delay here
+                MainActivity.firebase.child("playAt").setValue(getSynchedTime() + 1000); //Change push-action delay here
                 if (!temp.isPlaying()) { //If it's not playing, then start playing
                     MainActivity.firebase.child("play").setValue(1);
                     //temp.start();
