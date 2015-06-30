@@ -51,11 +51,11 @@ public class JoinGroupFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 joinField = new EditText(getActivity());
-                joinField.setHint("Enter Group Name");
+                joinField.setHint("Enter IP Address");
 
                 new AlertDialog.Builder(getActivity())
                         .setView(joinField)
-                        .setTitle("Group Name:")
+                        .setTitle("IP Address:")
                         .setView(joinField)
                         .setPositiveButton("Join", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {

@@ -174,17 +174,12 @@ public class MainActivityFragment extends Fragment {
                         e.printStackTrace();
                     }
                 }
-                MainActivity.firebase.child("playAt").setValue(getSynchedTime() + 1000); //Change push-action delay here
+                MainActivity.firebase.child("playAt").setValue(getSynchedTime() + 2000); //Change push-action delay here
                 if (!temp.isPlaying()) { //If it's not playing, then start playing
                     MainActivity.firebase.child("play").setValue(1);
-                    //temp.start();
-                    //startMusicService();
-                    tabPlayPause.setImageDrawable(getResources().getDrawable(R.drawable.pause_ring));
                 } else { //If it's playing, then pause it.
-                    //temp.pause();
                     MainActivity.firebase.child("seekVal").setValue(temp.getCurrentPosition());
                     MainActivity.firebase.child("play").setValue(0);
-                    tabPlayPause.setImageDrawable(getResources().getDrawable(R.drawable.play_ring));
                 }
             }
         });
@@ -279,21 +274,20 @@ public class MainActivityFragment extends Fragment {
                             MainActivity.firebase.child("seekVal").addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
-                                    if (temp!=null) {
-                                        temp.seekTo(Long.valueOf((long) dataSnapshot.getValue()).intValue());
-                                    }
+                                    if (mPlayVal == 1)
+                                        tabPlayPause.setImageDrawable(getResources().getDrawable(R.drawable.pause_ring));
+                                    else
+                                        tabPlayPause.setImageDrawable(getResources().getDrawable(R.drawable.play_ring));
+                                    System.out.println("Ready and waiting.");
                                     while (getSynchedTime() < timeStart){ /*Do nothing. Just wait. Welcome to hackathon hack solutions.*/ }
                                     if (mPlayVal == 1 && temp!=null) {
                                         if (!temp.isPlaying()) {
                                             temp.start();
-                                            long before = new Date().getTime();
-                                            tabPlayPause.setImageDrawable(getResources().getDrawable(R.drawable.pause_ring));
-                                            System.out.println("doing that took "+(new Date().getTime()-before)+" milliseconds.");
                                         }
                                     } else if (temp!=null){
                                         if (temp.isPlaying()) {
                                             temp.pause();
-                                            tabPlayPause.setImageDrawable(getResources().getDrawable(R.drawable.play_ring));
+                                            temp.seekTo(Long.valueOf((long)dataSnapshot.getValue()).intValue());
                                         }
                                     }
                                 }
@@ -331,7 +325,8 @@ public class MainActivityFragment extends Fragment {
 
         MainActivity.firebase.child("seekVal").setValue(0);
 
-        new debugUpdater(getActivity(), debugView).executeOnExecutor(Executors.newSingleThreadExecutor());
+        //Debug Updater
+        //new debugUpdater(getActivity(), debugView).executeOnExecutor(Executors.newSingleThreadExecutor());
 
         return v;
     }
